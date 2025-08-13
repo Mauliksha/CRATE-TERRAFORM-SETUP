@@ -1,0 +1,45 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    branches:
+      - main  # Or your desired deployment branch
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    environment: production  # Or the environment you want to deploy to (e.g., staging)
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 5.1.0  # Specify the Terraform version (e.g., 1.3.0)
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan
+        continue-on-error: true # If you want to continue even if the plan fails (for logging purposes)
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
