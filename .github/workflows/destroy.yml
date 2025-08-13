@@ -28,4 +28,4 @@ jobs:
 
       - name: Terraform Destroy
         run: terraform destroy -auto-approve
-        working-directory: ./terraform
+        working-directory: C:\Users\LENOVO\CRATE-TERRAFORM-SETUP\CRATE-TERRAFORM-SETUP\.terraform
