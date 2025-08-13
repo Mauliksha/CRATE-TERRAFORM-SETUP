@@ -31,7 +31,14 @@ resource "aws_security_group" "alb_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
+  
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
   ingress {
     from_port   = 443
     to_port     = 443
@@ -56,6 +63,13 @@ resource "aws_security_group" "ec2_sg" {
   ingress {
     from_port       = 80
     to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]
+  }
+  
+  ingress {
+    from_port       = 3000
+    to_port         = 3000
     protocol        = "tcp"
     security_groups = [aws_security_group.alb_sg.id]
   }
@@ -134,7 +148,7 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 
 # Sample EC2 instance in private subnet with Docker installed
 resource "aws_instance" "app" {
-  ami                  = "ami-0c02fb55956c7d316"
+  ami                  = "ami-0e1989e836322f58b"
   instance_type        = "t2.micro"
   subnet_id            = module.vpc.private_subnets[0]
   security_groups      = [aws_security_group.ec2_sg.id]
